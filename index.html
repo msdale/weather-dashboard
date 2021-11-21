@@ -1,0 +1,97 @@
+<!DOCTYPE html> <!-- proper HTML5 doctype -->
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Weather Dashboard</title>
+  <link href="./assets/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+  <header>
+    <h1>Weather Dashboard</h1>
+  </header>
+
+  <section class="row">
+    <div class="city-list col-left">
+      <h2>
+        Search for a City:
+      </h2>
+      <input type="text" size="34px" id="city-input" placeholder="City Name (US)" value="City Name (US)">
+      <button class="btn btn-search" style="margin-bottom: 12px;">Search</button>
+      <p style="margin-top: 2px; height: 1px; padding-top: 1px; background-color:#b4b9b7;"></p>
+      <ul>
+        <li>
+          <button class="btn">city 2</button>
+        </li>
+        <li>
+          <button class="btn">city 3</button>
+        </li>
+        <li>
+          <button class="btn">city 4</button>
+        </li>
+        <li>
+          <button class="btn">city 5</button>
+        </li>
+        <li>
+          <button class="btn">city 5</button>
+        </li>
+        <li>
+          <button class="btn">city 5</button>
+        </li>
+        <li>
+          <button class="btn">city 5</button>
+        </li>
+      </ul>
+    </div>
+    <div class="col-right" id="single-column">
+      <div class="weather-now">
+        <ul>
+          <li>
+            City (date)
+          </li>
+          <li>
+            temp
+          </li>
+          <li>
+            wind
+          </li>
+          <li>
+            humidity
+          </li>
+          <li>
+            UV idx
+          </li>
+        </ul>
+      </div>
+      <div class="row #multi-column">
+        <div class="weather-forecast">
+          <h2>5-Day Forecast</h2>
+          <ul>
+            <li>
+              stuff
+            </li>
+            <li>
+              stuff
+            </li>
+            <li>
+              stuff
+            </li>
+            <li>
+              stuff
+            </li>
+            <li>
+              stuff
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="js/script.js"></script>
+</body>
+
+</html>
