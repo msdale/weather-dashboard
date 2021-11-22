@@ -37,6 +37,7 @@ header h1 {
   margin-left: 1px;
   border-color:#b4b9b7;
   border-radius: 5px;
+  font-size:1em;
 }
 .city-list {
   color: black;
@@ -44,15 +45,24 @@ header h1 {
   max-width: 300px;
 }
 
-.city-list h2 {
+.city-list label {
   margin: 0px;
   max-width: 190px;
+  font-size: 1.5em;
+  font-weight:bold;
 }
 
 .city-list ul {
   width: 300px;
   list-style-type: none;
   padding-left: 0px;
+}
+
+.city-list p {
+  margin-top: 2px;
+  height: 1px;
+  padding-top:
+  1px; background-color:#b4b9b7;
 }
 
 .weather-now {
@@ -122,5 +132,5 @@ header h1 {
 .btn-search {
   background-color:rgb(83, 83, 240);
   border-bottom: 1px solid #b4b9b7;
-  margin-bottom: 5px;
+  margin-bottom: 12px;
 }

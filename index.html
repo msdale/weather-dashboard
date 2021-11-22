@@ -16,39 +16,42 @@
 
   <section class="row">
     <div class="city-list col-left">
-      <h2>
-        Search for a City:
-      </h2>
-      <input type="text" size="34px" id="city-input" placeholder="City Name (US)" value="City Name (US)">
-      <button class="btn btn-search" style="margin-bottom: 12px;">Search</button>
-      <p style="margin-top: 2px; height: 1px; padding-top: 1px; background-color:#b4b9b7;"></p>
+      <form>
+      <label for="city-input">Search for a City</label>
+      <input type="text" size="29px" name="city-input" autofocus="true" id="city-input" placeholder="City Name (US)">
+      <button type="submit" id="search-button" class="btn btn-search">Search</button>
+      </form>
+      <p></p>
       <ul>
         <li>
-          <button class="btn">city 2</button>
+          <button class="btn" style="display: none;"></button>
         </li>
         <li>
-          <button class="btn">city 3</button>
+          <button class="btn" style="display: none;"></button>
         </li>
         <li>
-          <button class="btn">city 4</button>
+          <button class="btn" style="display: none;"></button>
         </li>
         <li>
-          <button class="btn">city 5</button>
+          <button class="btn" style="display: none;"></button>
         </li>
         <li>
-          <button class="btn">city 5</button>
+          <button class="btn" style="display: none;"></button>
         </li>
         <li>
-          <button class="btn">city 5</button>
+          <button class="btn" style="display: none;"></button>
         </li>
         <li>
-          <button class="btn">city 5</button>
+          <button class="btn" style="display: none;"></button>
+        </li>
+        <li>
+          <button class="btn" style="display: none;"></button>
         </li>
       </ul>
     </div>
     <div class="col-right" id="single-column">
       <div class="weather-now">
-        <ul>
+        <ul id="currentDay">
           <li>
             City (date)
           </li>
@@ -69,7 +72,7 @@
       <div class="row #multi-column">
         <div class="weather-forecast">
           <h2>5-Day Forecast</h2>
-          <ul>
+          <ul id="next5Days">
             <li>
               stuff
             </li>
@@ -91,7 +94,7 @@
     </div>
   </section>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-  <script src="js/script.js"></script>
+  <script src="./assets/js/script.js"></script>
 </body>
 
 </html>
