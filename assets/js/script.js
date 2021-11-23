@@ -54,11 +54,11 @@ var copyNext5Days = function () {
   ];
 
   for (var i = 0; i < n5d.length; i++) {
-    n5d[i] = next5Days[i].date;
-    n5d[i] = next5Days[i].icon;
-    n5d[i] = next5Days[i].temp;
-    n5d[i] = next5Days[i].wind;
-    n5d[i] = next5Days[i].humidity;
+    n5d[i].date = next5Days[i].date;
+    n5d[i].icon = next5Days[i].icon;
+    n5d[i].temp = next5Days[i].temp;
+    n5d[i].wind = next5Days[i].wind;
+    n5d[i].humidity = next5Days[i].humidity;
   }
   return n5d;
 };
@@ -99,9 +99,7 @@ var submitCity = function (event) {
   //console.log(cityName);
 
   if (cityName) {
-    if (getCityWeather(cityName)) {
-      setHistory();
-    }
+    getCityWeather(cityName)
   } else {
     alert("Please enter a city name for weather data");
   }
@@ -166,6 +164,7 @@ const getCityWeather = async function (cityName) {
   assignNext5Days(weatherDataJson);
   fillInWeatherNow();
   fillInNext5Days();
+  setHistory();
   return true;
 };
 
