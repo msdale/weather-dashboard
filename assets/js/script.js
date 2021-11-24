@@ -88,15 +88,18 @@ var submitCity = function (event) {
   event.preventDefault();
 
   // account for history button usage
+  // get value from input element
+  var capitalizeFirstChar = function (string) 
+  {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   if (event.target.textContent.toLowerCase() !== "search") {
     cityName = event.target.textContent;
     inputCityEl.value = cityName;
   } else {
-    cityName = inputCityEl.value.trim();
+    cityName = capitalizeFirstChar(inputCityEl.value.trim());
   }
-
-  // get value from input element
-  //console.log(cityName);
 
   if (cityName) {
     getCityWeather(cityName)
@@ -116,7 +119,7 @@ const getAPIData = async (currentWeatherAPI) => {
 };
 
 var assignCurrentDay = function (weatherData) {
-  const date = new Date();
+  const date = new Date(weatherData.current.dt * 1000);
   currentDay.city = cityName;
   currentDay.date = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
   currentDay.icon = weatherData.current.weather[0].icon + ".png";
@@ -129,12 +132,12 @@ var assignCurrentDay = function (weatherData) {
 
 var assignNext5Days = function (weatherData) {
   for (var i = 0; i < next5Days.length; i++) {
-    var date = new Date(weatherData.daily[i].dt * 1000);
+    var date = new Date(weatherData.daily[i+1].dt * 1000);
     next5Days[i].date = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
-    next5Days[i].icon = weatherData.daily[i].weather[0].icon + ".png";
-    next5Days[i].temp = Math.round(((((weatherData.daily[i].temp.day - 273.15) * (9 / 5) + 32) + Number.EPSILON) * 100) / 100);
-    next5Days[i].wind = weatherData.daily[i].wind_speed;
-    next5Days[i].humidity = weatherData.daily[i].humidity;
+    next5Days[i].icon = weatherData.daily[i+1].weather[0].icon + ".png";
+    next5Days[i].temp = Math.round(((((weatherData.daily[i+1].temp.day - 273.15) * (9 / 5) + 32) + Number.EPSILON) * 100) / 100);
+    next5Days[i].wind = weatherData.daily[i+1].wind_speed;
+    next5Days[i].humidity = weatherData.daily[i+1].humidity;
   }
   //console.log(next5Days);
 };
@@ -196,7 +199,22 @@ var fillInWeatherNow = function () {
         weatherAttrs[i].textContent = "Humidity: " + currentDay.humidity + " %";
         break;
       case 4:
-        weatherAttrs[i].textContent = "UV Index: " + currentDay.UVidx;
+        //weatherAttrs[i].textContent = "UV Index: " + currentDay.UVidx;
+        weatherAttrs[i].textContent = "UV Index: ";
+        var uvEl = document.createElement("p");
+        uvEl.style.display = "inline";
+        uvEl.style.color = "white";
+        if (currentDay.UVidx < 6) {
+          uvEl.style.backgroundColor = "green";
+        } else if (currentDay.UVidx < 8) {
+          uvEl.style.backgroundColor = "#fff000";
+          uvEl.style.color = "black";
+        } else if (currentDay.UVidx >= 8) {
+          uvEl.style.color = "black";
+          uvEl.style.backgroundColor = "red";
+        }
+        uvEl.textContent = currentDay.UVidx;
+        weatherAttrs[i].appendChild(uvEl);
         break;
     }
   }
