@@ -1,3 +1,4 @@
+// GLOBAL VARIABLES
 var cityWeatherData = [];
 var cityName = "";
 var currentDate = "";
@@ -13,6 +14,12 @@ var inputCityEl = document.querySelector("#city-input")
 var inputCityBtnEl = document.querySelector("#search-button")
 var historyBtnListEl = document.querySelector("#history-buttons");
 
+/**
+ * foundCityWeatherData() searches for previously pulled weather data
+ *   for the city named in the argument list.
+ * @param {string - the city name} city 
+ * @returns {boolean} true or false
+ */
 var foundCityWeatherData = function (city) {
   for (var i = 0; i < cityWeatherData.length; i++) {
     if (cityWeatherData[i].city === city) {
@@ -22,6 +29,11 @@ var foundCityWeatherData = function (city) {
   return false;
 };
 
+/**
+ * reuseCityWeatherData() refreshes the current weather data from previously
+ *   stored data.
+ * @param {string - the city name} city 
+ */
 var reuseCityWeatherData = function (city) {
   for (var i = 0; i < cityWeatherData.length; i++) {
     if (cityWeatherData[i].city === city) {
@@ -32,6 +44,11 @@ var reuseCityWeatherData = function (city) {
   }
 };
 
+/**
+ * copyCurrentDay() makes and returns a deep copy of the current day weather data for a particular
+ *   city.
+ * @returns {Object} weather data
+ */
 var copyCurrentDay = function () {
   var cd = { "city": "", "date": "", "icon": "", "temp": "", "wind": "", "humidity": "", "UVidx": "" };
   cd.city = currentDay.city;
@@ -44,6 +61,11 @@ var copyCurrentDay = function () {
   return cd;
 };
 
+/**
+ * copyNext5Days() makes and returns a deep copy of the 5-day weather forecast data for a particular
+ *   city. 
+ * @returns {object} a copy of the 5 day weather forecast 
+ */
 var copyNext5Days = function () {
   var n5d = [
     { "date": "", "icon": "", "temp": "", "wind": "", "humidity": "", "UVidx": "" },
@@ -63,6 +85,12 @@ var copyNext5Days = function () {
   return n5d;
 };
 
+/**
+ * setHistory() copies the current day weather and weather forecast for a particular city
+ *   to a storage array that maintains a list of all weather results for a accumulated
+ *   in this particular session.  This storage is volatile and disappears when the session ends
+ *   or a new session is started.  
+ */
 var setHistory = function () {
   //if not already there...add it in
   if (!foundCityWeatherData(cityName)) {
@@ -74,6 +102,12 @@ var setHistory = function () {
   }
 };
 
+/**
+ * setHistoryBtn() sets the name (textContent) and location of a button that is created and 
+ *   positioned in the historical button list on the left of the page.  Used to retrieve the
+ *   previously queried results for a particular city. 
+ * @param {string - the city name} city 
+ */
 var setHistoryBtn = function (city) {
   var listItemEl = document.createElement("li");
   var historyBtnEl = document.createElement("button");
@@ -83,17 +117,31 @@ var setHistoryBtn = function (city) {
   historyBtnListEl.appendChild(listItemEl);
 };
 
+/********************
+ *                  *
+ * STARTER FUNCTION *
+ *                  *
+ ********************/
+
+/**
+ * submitCity() is used with the event listener to retrieve and process data when the
+ *   "Search" button is clicked to execute a weather data look-up for the city named in
+ *   the form input element. The page is populated with the weather data retrieved. 
+ * @param {Object} event 
+ */
 var submitCity = function (event) {
   // prevent page from refreshing
   event.preventDefault();
 
-  // account for history button usage
-  // get value from input element
+  // a silly little city name transformer function to capitalize first char...
+  // this was a quick and dirty fix...should be improved
   var capitalizeFirstChar = function (string) 
   {
       return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
+  // get value from input element...
+  // account for history button usage by checking for "Search" text
   if (event.target.textContent.toLowerCase() !== "search") {
     cityName = event.target.textContent;
     inputCityEl.value = cityName;
@@ -101,6 +149,7 @@ var submitCity = function (event) {
     cityName = capitalizeFirstChar(inputCityEl.value.trim());
   }
 
+  // go get the weather data for the named city
   if (cityName) {
     getCityWeather(cityName)
   } else {
@@ -108,16 +157,26 @@ var submitCity = function (event) {
   }
 };
 
+/**
+ * getAPIData() retrieve weather data from the API/URL provided in the parameter.
+ *   Note the "async" and "await" keyword used to manage the asynchronousity of the
+ *   API call.  
+ * @param {Object - contains the API/URL for retrieving weather data} currentWeatherAPI 
+ * @returns {JSON object} all the weather data for a particular city
+ */
 const getAPIData = async (currentWeatherAPI) => {
   const response = await fetch(currentWeatherAPI);
   if (!response.ok) {
     alert('Error: ' + response.statusText);
   }
   const json = await response.json();
-  //console.log(json);
   return await json;
 };
 
+/**
+ * assignCurrentDay() assigns the results from the API query to the global currentDay variable
+ * @param {weather data query results} weatherData 
+ */
 var assignCurrentDay = function (weatherData) {
   const date = new Date(weatherData.current.dt * 1000);
   currentDay.city = cityName;
@@ -127,9 +186,12 @@ var assignCurrentDay = function (weatherData) {
   currentDay.wind = weatherData.current.wind_speed;
   currentDay.humidity = weatherData.current.humidity;
   currentDay.UVidx = weatherData.current.uvi;
-  //console.log(currentDay);
 };
 
+/**
+ * assignNext5Days() assigns the results from the API query to the global next5Days variable
+ * @param {weather data query results} weatherData 
+ */
 var assignNext5Days = function (weatherData) {
   for (var i = 0; i < next5Days.length; i++) {
     var date = new Date(weatherData.daily[i+1].dt * 1000);
@@ -139,30 +201,35 @@ var assignNext5Days = function (weatherData) {
     next5Days[i].wind = weatherData.daily[i+1].wind_speed;
     next5Days[i].humidity = weatherData.daily[i+1].humidity;
   }
-  //console.log(next5Days);
 };
 
-const getCityWeather = async function (cityName) {
-
-  if (foundCityWeatherData(cityName)) {
-    reuseCityWeatherData(cityName)
+/**
+ * getCityWeather() retrieves the city weather data.  First looks up city lat and lon...
+ *   then gets all the necessary weather data in the "onecall" call using lat and lon as
+ *   parameters
+ * @param {String - yea...city name} city 
+ * @returns 
+ */
+const getCityWeather = async function (city) {
+  if (foundCityWeatherData(city)) {
+    reuseCityWeatherData(city)
     fillInWeatherNow();
     fillInNext5Days();
     return false;
   }
 
-  var apiUrl = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=58ff076f4d76d50b2538a2f8d97c8d59";
-  var latLonJson = await getAPIData(apiUrl);
-
   // Fetch city lat and lon from the current weather api
+  var apiUrl = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=58ff076f4d76d50b2538a2f8d97c8d59";
+  const latLonJson = await getAPIData(apiUrl);
+
   var lat = latLonJson.coord.lat;
   var lon = latLonJson.coord.lon;
 
+  // Use lat and lon to retrieve all the weather data needed
   var apiUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&exclude=minutely,hourly,alerts&appid=58ff076f4d76d50b2538a2f8d97c8d59"
-  var weatherDataJson = await getAPIData(apiUrl);
+  const weatherDataJson = await getAPIData(apiUrl);
 
   // Fetch all pertinent weather data for the chosen city
-  //console.log(JSON.stringify(weatherDataJson));
   assignCurrentDay(weatherDataJson);
   assignNext5Days(weatherDataJson);
   fillInWeatherNow();
@@ -171,11 +238,13 @@ const getCityWeather = async function (cityName) {
   return true;
 };
 
+/**
+ * fillInWeatherNow() copies all the pertinent weather data from the currentDay variable
+ *   to the Web page
+ */
 var fillInWeatherNow = function () {
   var weatherNowEl = document.querySelector("#currentDay");
   var weatherAttrs = weatherNowEl.getElementsByTagName("li");
-  //console.log("filling in weather");
-  //console.log(currentDay);
   for (var i = 0; i < weatherAttrs.length; i++) {
     switch (i) {
       case 0:
@@ -220,17 +289,23 @@ var fillInWeatherNow = function () {
   }
 };
 
+/**
+ * removeAllChildNodes() removes all child nodes from parent node...
+ *   self-evident I think
+ * @param {HTML element} parent 
+ */
 var removeAllChildNodes = function (parent) {
-  //console.log("START OF removeAllChildNodes()");
   if (parent) {
     while (parent.firstChild) {
       parent.removeChild(parent.firstChild);
     }
   }
-  //console.log("END OF removeAllChildNodes()");
 };
 
-
+/**
+ * fillInNext5Days() retrieves the weather forecast data from the next5Days variable
+ *   and populates the proper elements in the Web page
+ */
 var fillInNext5Days = function () {
   var weatherNext5DaysEl = document.querySelector("#next5Days");
   var days = weatherNext5DaysEl.getElementsByTagName("li");
@@ -266,12 +341,11 @@ var fillInNext5Days = function () {
       }
       days[i].appendChild(weatherAttrEl);
     }
-    //console.log(days[i]);
   }
 };
 
+// "Search" button retrieves city name from the input form
 inputCityBtnEl.addEventListener('click', submitCity);
-//document.querySelectorAll("#history-buttons").forEach(item => {
-//  item.addEventListener("click", submitCity);
-//});
+// Historical search buttons use city name in button textContent to re-populate
+// the Web page with city weather previously pulled in this session
 historyBtnListEl.addEventListener('click', submitCity);
