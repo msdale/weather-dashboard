@@ -219,7 +219,7 @@ const getCityWeather = async function (city) {
   }
 
   // Fetch city lat and lon from the current weather api
-  var apiUrl = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=58ff076f4d76d50b2538a2f8d97c8d59";
+  var apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=58ff076f4d76d50b2538a2f8d97c8d59";
   const latLonJson = await getAPIData(apiUrl);
 
   var lat = latLonJson.coord.lat;
