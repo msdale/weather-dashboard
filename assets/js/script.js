@@ -220,14 +220,14 @@ const getCityWeather = async function (city) {
 
   // Fetch city lat and lon from the current weather api
   var apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=58ff076f4d76d50b2538a2f8d97c8d59";
-  const latLonJson = await getAPIData(apiUrl);
+  const latLonJson = getAPIData(apiUrl);
 
   var lat = latLonJson.coord.lat;
   var lon = latLonJson.coord.lon;
 
   // Use lat and lon to retrieve all the weather data needed
   var apiUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&exclude=minutely,hourly,alerts&appid=58ff076f4d76d50b2538a2f8d97c8d59"
-  const weatherDataJson = await getAPIData(apiUrl);
+  const weatherDataJson = getAPIData(apiUrl);
 
   // Fetch all pertinent weather data for the chosen city
   assignCurrentDay(weatherDataJson);
@@ -273,14 +273,14 @@ var fillInWeatherNow = function () {
         var uvEl = document.createElement("p");
         uvEl.style.display = "inline";
         uvEl.style.color = "white";
-        if (currentDay.UVidx < 6) {
+        if (currentDay.UVidx < 2) {
           uvEl.style.backgroundColor = "green";
-        } else if (currentDay.UVidx < 8) {
-          uvEl.style.backgroundColor = "#fff000";
+        } else if (currentDay.UVidx < 5) {
+          uvEl.style.backgroundColor = "#ffff00";
           uvEl.style.color = "black";
-        } else if (currentDay.UVidx >= 8) {
+        } else if (currentDay.UVidx >= 6) {
           uvEl.style.color = "black";
-          uvEl.style.backgroundColor = "red";
+          uvEl.style.backgroundColor = "#ffa500";
         }
         uvEl.textContent = currentDay.UVidx;
         weatherAttrs[i].appendChild(uvEl);
