@@ -1,8 +1,10 @@
 // GLOBAL VARIABLES
 var cityWeatherData = [];
 var cityName = "";
-var currentDate = "";
+const globalDate = new Date();
+var currentDate = (globalDate.getMonth() + 1) + "/" + globalDate.getDate() + "/" + globalDate.getFullYear();
 var currentDay = { "city": "", "date": "", "icon": "", "temp": "", "wind": "", "humidity": "", "UVidx": "" };
+//var currentDay = {};
 var next5Days = [
   { "date": "", "icon": "", "temp": "", "wind": "", "humidity": "", "UVidx": "" },
   { "date": "", "icon": "", "temp": "", "wind": "", "humidity": "", "UVidx": "" },
@@ -88,17 +90,42 @@ var copyNext5Days = function () {
 /**
  * setHistory() copies the current day weather and weather forecast for a particular city
  *   to a storage array that maintains a list of all weather results for a accumulated
- *   in this particular session.  This storage is volatile and disappears when the session ends
- *   or a new session is started.  
+ *   in this particular session.  This storage is copied to localStorage to persist across
+ *   sessions.  
  */
 var setHistory = function () {
   //if not already there...add it in
   if (!foundCityWeatherData(cityName)) {
-    cd = copyCurrentDay();
-    n5d = copyNext5Days();
-    cityWeatherData.push({ "city": cityName, "currentDay": cd, "next5Days": n5d });
-    console.log(cityWeatherData);
+    let cd = copyCurrentDay();
+    let n5d = copyNext5Days();
+    cityWeatherData.push({ "city": cityName, "currentDate": currentDate, "currentDay": cd, "next5Days": n5d });
     setHistoryBtn(cityName);
+    localStorage.setItem("cityWeatherData", JSON.stringify(cityWeatherData));
+  }
+};
+
+/**
+ * resetHistory() pulls localStorage city weather data into global storage, BUT only for 
+ * cities that were last queried on the current day.  So weather history is only reset
+ * per city if the last weather query for the city was dated on the current day.  So history
+ * buttons can accumulate throughout the day, but will be cleared the following day.
+ */
+var resetHistory = function () {
+  var storageCityWeatherData = JSON.parse(localStorage.getItem("cityWeatherData"));
+  localStorage.clear();
+  var filteredCityWeatherData = [];
+  if (storageCityWeatherData) {
+    for (var i = 0; i < storageCityWeatherData.length; i++) {
+      if (storageCityWeatherData[i].currentDate === currentDate) {
+        filteredCityWeatherData.push(storageCityWeatherData[i]);
+      }
+    }
+  }
+  cityWeatherData = filteredCityWeatherData;
+  localStorage.setItem("cityWeatherData", JSON.stringify(cityWeatherData));
+  for (var i = 0; i < cityWeatherData.length; i++) {
+    console.log(cityWeatherData[i].city);
+    setHistoryBtn(cityWeatherData[i].city);
   }
 };
 
@@ -135,9 +162,8 @@ var submitCity = function (event) {
 
   // a silly little city name transformer function to capitalize first char...
   // this was a quick and dirty fix...should be improved
-  var capitalizeFirstChar = function (string) 
-  {
-      return string.charAt(0).toUpperCase() + string.slice(1);
+  var capitalizeFirstChar = function (string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
   // get value from input element...
@@ -170,7 +196,7 @@ const getAPIData = async (currentWeatherAPI) => {
     alert('Error: ' + response.statusText);
   }
   const json = await response.json();
-  return await json;
+  return json;
 };
 
 /**
@@ -194,12 +220,12 @@ var assignCurrentDay = function (weatherData) {
  */
 var assignNext5Days = function (weatherData) {
   for (var i = 0; i < next5Days.length; i++) {
-    var date = new Date(weatherData.daily[i+1].dt * 1000);
+    var date = new Date(weatherData.daily[i + 1].dt * 1000);
     next5Days[i].date = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
-    next5Days[i].icon = weatherData.daily[i+1].weather[0].icon + ".png";
-    next5Days[i].temp = Math.round(((((weatherData.daily[i+1].temp.day - 273.15) * (9 / 5) + 32) + Number.EPSILON) * 100) / 100);
-    next5Days[i].wind = weatherData.daily[i+1].wind_speed;
-    next5Days[i].humidity = weatherData.daily[i+1].humidity;
+    next5Days[i].icon = weatherData.daily[i + 1].weather[0].icon + ".png";
+    next5Days[i].temp = Math.round(((((weatherData.daily[i + 1].temp.day - 273.15) * (9 / 5) + 32) + Number.EPSILON) * 100) / 100);
+    next5Days[i].wind = weatherData.daily[i + 1].wind_speed;
+    next5Days[i].humidity = weatherData.daily[i + 1].humidity;
   }
 };
 
@@ -273,14 +299,17 @@ var fillInWeatherNow = function () {
         var uvEl = document.createElement("p");
         uvEl.style.display = "inline";
         uvEl.style.color = "white";
-        if (currentDay.UVidx < 6) {
+        if (currentDay.UVidx < 2) {
           uvEl.style.backgroundColor = "green";
+        } else if (currentDay.UVidx < 4.5) {
+          uvEl.style.backgroundColor = "#ffff00";
+          uvEl.style.color = "black";
         } else if (currentDay.UVidx < 8) {
-          uvEl.style.backgroundColor = "#fff000";
+          uvEl.style.backgroundColor = "#ffa500";
           uvEl.style.color = "black";
         } else if (currentDay.UVidx >= 8) {
           uvEl.style.color = "black";
-          uvEl.style.backgroundColor = "red";
+          uvEl.style.backgroundColor = "#ff0000";
         }
         uvEl.textContent = currentDay.UVidx;
         weatherAttrs[i].appendChild(uvEl);
@@ -344,6 +373,7 @@ var fillInNext5Days = function () {
   }
 };
 
+resetHistory();
 // "Search" button retrieves city name from the input form
 inputCityBtnEl.addEventListener('click', submitCity);
 // Historical search buttons use city name in button textContent to re-populate
