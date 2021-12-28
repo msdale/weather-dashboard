@@ -10,8 +10,8 @@ page with the previous query's results (no extra API lookup required).
 ![Sample image](./assets/images/sample-screen.png)
 
 ## Future Considerations
-Provide a "Save History" and "Clear History" button to maintain previous weather
-lookups across sessions (use local storage);
+Provide a "Clear History" button to maintain more control over previous weather
+lookups.
 
 ## Website URL
 https://msdale.github.io/weather-dashboard/
